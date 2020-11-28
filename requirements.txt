@@ -8,3 +8,4 @@ pandas
 scikit-learn
 requests
 streamlit
+databricks-cli
