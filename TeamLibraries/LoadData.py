@@ -4,8 +4,9 @@ import os
 import pandas as pd
 import pyodbc
 
-# Funzione che tramite la stringa di connessione crea una connessione con il database CampusData su azure
-def get_database():
+
+def connect_azure_database():
+    # Funzione che crea una connessione con il database SQL CampusData presente nella sottoscrizione di Microsoft Azure
     try:
         conn = pyodbc.connect(
             r'Driver={ODBC Driver 17 for SQL Server};'
@@ -16,17 +17,43 @@ def get_database():
     except pyodbc.Error as err: # Only error I wanted passed for the test!
         logging.warn(err)
 
-# Funzione che restituisce un dataset pandas che rappresenta la query passata come argomento
-def getDatasetByDB(sql = "SELECT * FROM dbo.Log_newData"):
+
+def load_azure_data(sql = "SELECT * FROM dbo.Log_newData"):
+    # Funzione che si connette al database SQL CampusData presente in Microsoft Azure e restituisce un DataFrame pandas  
+    # sulla base della query passata come input
     try:    
-        conn = get_database()       
+        conn = connect_azure_database()       
         data = pd.read_sql(sql,conn)
         return data
     except:
         #raise ValueError('Error pd.read_sql')
         logging.warn('Error pd.read_sql')
 
-#data = getDatasetByDB()
-#print(data.head(100))
 
+def load_local_building():
+     # Funzione che carica il file "building.csv" salvato in locale nella cartella di progetto "datasets"
+     df_building = pd.read_csv('./datasets/building.csv', sep=',', encoding='cp1252')
+     return df_building
+
+
+def load_local_group():    
+    # Funzione che carica il file "group.csv" salvato in locale nella cartella di progetto "datasets"
+    df_group = pd.read_csv('./datasets/group.csv', sep=',', encoding='cp1252')
+    return df_group
+
+
+def load_local_log():
+    # Funzione che carica il file "log2.csv" salvato in locale nella cartella di progetto "datasets"
+    df_log = pd.read_csv('./datasets/log2.csv', sep=';', encoding='cp1252')
+    return df_log
+
+
+def load_model_url():
+    # Funzione che carica l'URL del modello Isolation Forest salvato in Databricks
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/Iso_Forest_Project/1/invocations"
+
+
+def load_databricks_token():
+    # Funzione che carica il token per la connessione a DataBricks
+    return "dapi9d493adb582d4a93953ce7a2d790b9d6"
 

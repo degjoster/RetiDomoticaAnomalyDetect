@@ -2,14 +2,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+import requests
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import IsolationForest
 
+
 def signals_selection(logs, groups):
-    
-    # Rimuove le rilevazioni di tipo boolean, quelle non mappate nel dataset "group" e quelle che non presentano un valore nei
+    # Funzione che rimuove le rilevazioni di tipo boolean, quelle non mappate nel dataset "group" e quelle che non presentano un valore nei
     # campi "Data", "Value" e "Id". Restituisce un dataframe di segnali che saranno effettivamente preprocessati e passati
-    # come input al modello per l'addestramento
+    # come input al modello per l'addestramento o la predizione
     
     # Unità di misura da tenere e tipologie di rilevazioni da rimuovere
     measures_to_keep = ['ppm', 'C°', '%', 'W', 'Wh']
@@ -33,7 +35,10 @@ def signals_selection(logs, groups):
     
     return logs
 
+
 def preprocessing(sel_logs):
+    # Funzione che rimuove le features non inerenti all'addestramento/predizione del modello e ricava le features riguardanti
+    # il mese e il giorno della settimana di ciascuna rilevazione
     
     # Ricavo il mese e il giorno della settimana della rilevazione
     sel_logs['Month'] = pd.DatetimeIndex(sel_logs['Data']).month
@@ -46,11 +51,25 @@ def preprocessing(sel_logs):
     return sel_logs
 
 def forest_train(train_logs, num_est=100, cnt_rate=0.01):
+    # Funzione che addestra il modello sulla base dei log preprocessati e degli iperparametri passati in ingresso
     iso_forest = IsolationForest(n_estimators=num_est, random_state=19, contamination=cnt_rate, 
                                  behaviour='deprecated').fit(train_logs)
     
     return iso_forest
 
-def forest_prediction(iso_forest, test_logs):
-    predictions = iso_forest.predict(test_logs)
-    return predictions
+
+def forest_prediction(model_url, databricks_token, data):
+    # Funzione che effettua la predizione sui dati richiamando il modello Isolation Forest
+    # versionato in DataBricks
+    
+    headers = {
+    "Authorization": f"Bearer {databricks_token}",
+    "Content-Type": "application/json; format=pandas-records",
+    }
+    
+    data_json = data if isinstance(data, list) else data.to_dict(orient="records")
+    response = requests.request(method='POST', headers=headers, url=model_url, json=data_json)
+    
+    #if response.status_code != 200:
+    #  raise Exception(f"Request failed with status {response.status_code}, {response.text}")
+    return response.json()

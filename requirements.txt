@@ -10,3 +10,4 @@ requests
 streamlit
 databricks-cli
 pyodbc
+matplotlib
