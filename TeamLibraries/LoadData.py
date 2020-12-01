@@ -32,19 +32,22 @@ def load_azure_data(sql = "SELECT * FROM dbo.Log_newData"):
 
 def load_local_building():
      # Funzione che carica il file "building.csv" salvato in locale nella cartella di progetto "datasets"
-     df_building = pd.read_csv('./datasets/building.csv', sep=',', encoding='cp1252')
+     path = os.path.join(os.path.abspath('.'),'datasets', 'building.csv')
+     df_building = pd.read_csv(path, sep=',', encoding='cp1252')
      return df_building
 
 
 def load_local_group():    
     # Funzione che carica il file "group.csv" salvato in locale nella cartella di progetto "datasets"
-    df_group = pd.read_csv('./datasets/group.csv', sep=',', encoding='cp1252')
+    path = os.path.join(os.path.abspath('.'),'datasets', 'group.csv')
+    df_group = pd.read_csv(path, sep=',', encoding='cp1252')
     return df_group
 
 
 def load_local_log():
     # Funzione che carica il file "log2.csv" salvato in locale nella cartella di progetto "datasets"
-    df_log = pd.read_csv('./datasets/log2.csv', sep=';', encoding='cp1252')
+    path = os.path.join(os.path.abspath('.'),'datasets', 'log2.csv')
+    df_log = pd.read_csv(path, sep=';', encoding='cp1252')
     return df_log
 
 
