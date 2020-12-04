@@ -60,3 +60,27 @@ def load_databricks_token():
     # Funzione che carica il token per la connessione a DataBricks
     return "dapi9d493adb582d4a93953ce7a2d790b9d6"
 
+
+def load_modelurl_CO2():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'ppm'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_CO2/Production/invocations"
+
+
+def load_modelurl_temperatura():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'C°'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_temperatura/Production/invocations"
+
+
+def load_modelurl_umidita():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in '%'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_umidita/Production/invocations"
+
+
+def load_modelurl_W():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'W'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_W/Production/invocations"
+
+
+def load_modelurl_Wh():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'Wh'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_Wh/Production/invocations"
