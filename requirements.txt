@@ -11,3 +11,4 @@ streamlit
 databricks-cli
 pyodbc
 matplotlib
+azure-storage-blob
