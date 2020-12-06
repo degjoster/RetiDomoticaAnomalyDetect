@@ -33,6 +33,27 @@ def load_model_url():
     # Funzione che carica l'URL del modello Isolation Forest salvato in Databricks
     return "https://adb-5873545433774891.11.azuredatabricks.net/model/Iso_Forest_Project/1/invocations"
 
+def load_modelurl_CO2():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'ppm'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_CO2/Production/invocations"
+
+def load_modelurl_temperatura():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'C°'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_temperatura/Production/invocations"
+
+def load_modelurl_umidita():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in '%'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_umidita/Production/invocations"
+
+
+def load_modelurl_W():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'W'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_W/Production/invocations"
+
+
+def load_modelurl_Wh():
+    # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'Wh'
+    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_Wh/Production/invocations"
 
 def load_databricks_token():
     # Funzione che carica il token per la connessione a DataBricks

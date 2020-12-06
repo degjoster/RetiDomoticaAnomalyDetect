@@ -7,6 +7,11 @@ import requests
 
 from src.data.load import load_azure_data
 from src.data.load import load_model_url
+from src.data.load import load_modelurl_CO2
+from src.data.load import load_modelurl_temperatura
+from src.data.load import load_modelurl_umidita
+from src.data.load import load_modelurl_W
+from src.data.load import load_modelurl_Wh
 from src.data.load import load_databricks_token
 from src.data.load import load_local_group
 from src.features.transform import signals_selection
@@ -54,15 +59,15 @@ def start_side_menu():
    
 
     if valueType == 'ppm':
-        value_measure =         st.sidebar.slider("CO2", 1, 15000, 25, 1)
+        value_measure =         st.sidebar.slider("CO2 in ppm", 1, 1500000, 25, 1)
     elif valueType == 'C°':
-        value_measure =         st.sidebar.slider("Gradi", -10, 500, 20, 1)
+        value_measure =         st.sidebar.slider("Gradi in C°", -10, 500, 20, 1)
     elif valueType == '%':
         value_measure =         st.sidebar.slider("%_umidità", 0, 200, 25, 1)
     elif valueType == 'W':
-        value_measure =         st.sidebar.slider("produzione fotovoltaico", -1000, 10000, 5000, 100)
+        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -1000, 10000, 5000, 100)
     elif valueType == 'Wh':
-        value_measure =         st.sidebar.slider("consumo energetico", 0, 10000, 2000, 100)
+        value_measure =         st.sidebar.slider("consumo energetico in Wh", 0, 10000, 2000, 100)
   
    
     
@@ -114,9 +119,23 @@ def start_side_menu():
        
         data = pd.DataFrame([row],columns = feat_cols)
         print(data)
-        # Prediction
-        model_url = load_model_url()
+
+        if valueType == 'ppm':
+            model_url = load_modelurl_CO2()
+        elif valueType == 'C°':
+            model_url = load_modelurl_temperatura()
+        elif valueType == '%':
+            model_url = load_modelurl_umidita()
+        elif valueType == 'W':
+            model_url = load_modelurl_W()
+        elif valueType == 'Wh':
+            model_url = load_modelurl_Wh()
+
+       
+        #model_url = load_modelurl_temperatura()
         databricks_token = load_databricks_token()
+
+         # Prediction
         print(' pre prediction')
         predictions = forest_prediction(model_url, databricks_token, data)
        # sel_logs['prediction'] = prediction
