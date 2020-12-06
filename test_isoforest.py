@@ -30,7 +30,7 @@ if __name__ == "__main__":
     
     # Carico il token di DataBricks e l'URL del modello per l'invio della richiesta
     databricks_token = tld.load_databricks_token()
-    model_url = tld.load_modelurl_umidita()
+    model_url = tld.load_model_prova()
     
     # Effettuo la predizione attraverso il modello
     prediction = tmf.forest_prediction(model_url, databricks_token, test_logs)
