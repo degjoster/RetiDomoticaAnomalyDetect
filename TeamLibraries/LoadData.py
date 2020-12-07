@@ -3,7 +3,7 @@ import os
 #import request
 import pandas as pd
 import pyodbc
-
+import pickle
 
 def connect_azure_database():
     # Funzione che crea una connessione con il database SQL CampusData presente nella sottoscrizione di Microsoft Azure
@@ -84,3 +84,31 @@ def load_modelurl_W():
 def load_modelurl_Wh():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'Wh'
     return "https://adb-4483624067336826.6.azuredatabricks.net/model/team1_Wh/Production/invocations"
+
+
+# Funzioni per il caricamento dei modelli di backup in formato pickle
+
+def load_model_pickle_CO2():
+    path_model = os.path.join(os.path.abspath('.'), 'TeamLibraries', 'model_pickle_CO2.pkl')
+    model = pickle.load(open(path_model, 'rb'))
+    return model
+
+def load_model_pickle_temperatura():
+    path_model = os.path.join(os.path.abspath('.'), 'TeamLibraries', 'model_pickle_temperatura.pkl')
+    model = pickle.load(open(path_model, 'rb'))
+    return model
+
+def load_model_pickle_umidita():
+    path_model = os.path.join(os.path.abspath('.'), 'TeamLibraries', 'model_pickle_umidita.pkl')
+    model = pickle.load(open(path_model, 'rb'))
+    return model
+
+def load_model_pickle_W():
+    path_model = os.path.join(os.path.abspath('.'), 'TeamLibraries', 'model_pickle_W.pkl')
+    model = pickle.load(open(path_model, 'rb'))
+    return model
+
+def load_model_pickle_Wh():
+    path_model = os.path.join(os.path.abspath('.'), 'TeamLibraries', 'model_pickle_Wh.pkl')
+    model = pickle.load(open(path_model, 'rb'))
+    return model
