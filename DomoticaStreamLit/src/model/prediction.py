@@ -16,3 +16,8 @@ def forest_prediction(model_url, databricks_token, data):
     #if response.status_code != 200:
     #  raise Exception(f"Request failed with status {response.status_code}, {response.text}")
     return response.json()
+
+def prediction_pkl(model, data):
+    # predict new data using the model
+    result = model.predict(data)  
+    return result

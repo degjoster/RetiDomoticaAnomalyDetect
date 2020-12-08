@@ -35,7 +35,7 @@ def load_model_url():
 
 def load_modelurl_CO2():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'ppm'
-    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_CO2/Production/invocations"
+    return "https://adb-4483624067336826.6.azuredatabricks.net/model/team1_CO2/1/invocations"
 
 def load_modelurl_temperatura():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'C°'
@@ -57,7 +57,7 @@ def load_modelurl_Wh():
 
 def load_databricks_token():
     # Funzione che carica il token per la connessione a DataBricks
-    return "dapi9d493adb582d4a93953ce7a2d790b9d6"
+    return "dapi9330364d579e4293586ae3e380aac044"
 
 def load_local_group():
     # Import sklearn pickle objects from training pipeline (model and feature eng pipelines)
@@ -69,5 +69,18 @@ def load_local_group():
     print(f"group_object_path: {group_object_path}")
 
     object_result = pd.read_csv(group_object_path, encoding= 'unicode_escape')
+
+    return object_result
+
+def load_sklearn_object(object_name):
+    # Import sklearn pickle objects from training pipeline (model and feature eng pipelines)
+   # folder_path = os.path.abspath(".")
+    training_path = os.path.abspath("..")
+
+    sklearn_object_path = os.path.join(training_path, "TeamLibraries", object_name)
+
+    print(f"sklearn object name read: {sklearn_object_path}")
+
+    object_result = pd.read_pickle(sklearn_object_path)
 
     return object_result

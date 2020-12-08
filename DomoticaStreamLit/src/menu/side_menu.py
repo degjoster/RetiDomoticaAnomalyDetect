@@ -5,25 +5,28 @@ import matplotlib.pyplot as plt
 import datetime
 import requests
 
-from src.data.load import load_azure_data
-from src.data.load import load_model_url
-from src.data.load import load_modelurl_CO2
-from src.data.load import load_modelurl_temperatura
-from src.data.load import load_modelurl_umidita
-from src.data.load import load_modelurl_W
-from src.data.load import load_modelurl_Wh
-from src.data.load import load_databricks_token
-from src.data.load import load_local_group
-from src.features.transform import signals_selection
-from src.features.transform import preprocessing
+from ..data.load import load_azure_data
+from ..data.load import load_model_url
+from ..data.load import load_modelurl_CO2
+from ..data.load import load_modelurl_temperatura
+from ..data.load import load_modelurl_umidita
+from ..data.load import load_modelurl_W
+from ..data.load import load_modelurl_Wh
+from ..data.load import load_databricks_token
+from ..data.load import load_local_group
+from ..data.load import load_sklearn_object
+from ..features.transform  import signals_selection
+from ..features.transform import preprocessing
 
-from src.model.prediction import forest_prediction
-
-from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import IsolationForest
+from ..model.prediction import forest_prediction
+from ..model.prediction import prediction_pkl
+from ..save.OperationsStorageAccount import saveJsonStorageAccountFromDataframe
+#
+#from sklearn.preprocessing import LabelEncoder
+#from sklearn.ensemble import IsolationForest
 
 def start_side_menu():
-    st.sidebar.title("Test")
+    st.sidebar.title("Scegliere Edificio e Misura")
     value = st.sidebar.radio("Scegli luogo",("Edificio1","Edificio3","Villa"))
 
     if value == "Edificio1":
@@ -33,13 +36,14 @@ def start_side_menu():
     elif value == "Villa":
         EId = 6
 
+    ####Lettura di group.csv per la generazione di una selectbox per selezionare la misura da testare
     df_group = load_local_group()
     df_group_descr = df_group[["Id","IdBuilding","Description","ValueType"]][df_group.IdBuilding == EId ]
-     # Unità di misura da tenere e tipologie di rilevazioni da rimuovere
+    # Unità di misura da tenere e tipologie di rilevazioni da rimuovere
     measures_to_keep = ['ppm', 'C°', '%', 'W', 'Wh']
     description_to_remove = ['Daikin Active Power Total','Consumo enel di E1 + Villa']
     
-     # Rimuovo i record associati a rilevazioni di tipo booleano
+    # Rimuovo i record associati a rilevazioni di tipo booleano
     df_group_descr = df_group_descr[df_group_descr['ValueType'].isin(measures_to_keep) == True]
     
     # Rimuovo i record associati a rilevazioni di tipo "Daikin Active Power Total" e "Consumo Enel di E1 + Villa"
@@ -47,30 +51,27 @@ def start_side_menu():
     df_group_descr = df_group_descr[["Id","Description","ValueType"]]
     #creo la lista di liste per creare la select box
     list_descr = df_group_descr.values.tolist()
-
     df_selectbox = pd.DataFrame(list_descr, columns=['Id','Description',"ValueType"])
-
     values = df_selectbox['Description'].tolist()
     options = df_selectbox['Id'].tolist()
-     
     dic = dict(zip(options, values))
     Id_descr = st.sidebar.selectbox('Choose a Measure', options, format_func=lambda x: dic[x])
     valueType = df_selectbox["ValueType"][df_selectbox.Id == Id_descr].values
    
-
+    st.sidebar.title("Scegiere valori e data da testare")
     if valueType == 'ppm':
         value_measure =         st.sidebar.slider("CO2 in ppm", 1, 1500000, 25, 1)
     elif valueType == 'C°':
         value_measure =         st.sidebar.slider("Gradi in C°", -10, 500, 20, 1)
     elif valueType == '%':
-        value_measure =         st.sidebar.slider("%_umidità", 0, 200, 25, 1)
+        value_measure =         st.sidebar.slider("%_umidità", 0, 10000000, 25, 1)
     elif valueType == 'W':
         value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -1000, 10000, 5000, 100)
     elif valueType == 'Wh':
         value_measure =         st.sidebar.slider("consumo energetico in Wh", 0, 10000, 2000, 100)
   
    
-    
+    ####Creazione calendario
     today =  datetime.date.today()
     day_calendar = st.sidebar.date_input("Selziona data di test", today)
     st.text("Carica dati da db azure")
@@ -78,9 +79,30 @@ def start_side_menu():
     print("day:", day )
     mese = day_calendar.month
     print("mese:", mese )
+
+    #### array di valori da usare nella funzione "predizione"
     row = [Id_descr,value_measure,mese,day]
 
-    if (st.button('Carica Dati da DataBase')):
+    ####Caricamento del modello da usare per la predizione
+    if valueType == 'ppm':
+        model_url = load_modelurl_CO2()
+    elif valueType == 'C°':
+        model_url = load_sklearn_object("model_pickle_temperatura.pkl")
+    elif valueType == '%':
+        model_url = load_sklearn_object("model_pickle_umidita.pkl")
+    elif valueType == 'W':
+        model_url = load_sklearn_object("model_pickle_W.pkl")
+    elif valueType == 'Wh':
+        model_url = load_sklearn_object("model_pickle_Wh.pkl")
+
+    
+    #####
+    #####Carico dati da DB Azure
+    
+    ####
+    ####Funzione per effettuare predizione dei dati scricati da Db
+    ####
+    def predizione_db():
         # Carico i dati dal database
         df_log = load_azure_data()        
        
@@ -89,24 +111,40 @@ def start_side_menu():
         
         # Effettuo il preprocessing dei log selezionati, ricavando le features necessarie all'Anomaly Detection
         # tramite il modello
-        test_logs = preprocessing(sel_logs)
-
-         # Prediction
-        model_url = load_model_url()
+        print(Id_descr )
+        db_logs = sel_logs[sel_logs.Id == Id_descr]
+        print(db_logs.head())
+        test_logs = preprocessing(db_logs)
+        
+        # Prediction
+        # model_url = load_model_url()
         databricks_token = load_databricks_token()
         print(' pre prediction')
-        prediction = forest_prediction(model_url, databricks_token, test_logs)
-        sel_logs['prediction'] = prediction
-        print(sel_logs.head())
-      #  print("Target 1:" + str(sel_logs.prediction[sel_logs.prediction == 1].count())) 
-      #  print("Target -1:" + str(sel_logs.prediction[sel_logs.prediction == -1].count())) 
-      #  print(sel_logs["Id","Value","prediction",sel_logs.prediction == -1])
-       # sel_logs_val = sel_logs[["IdBuilding","Id","Description","ValueType","Value"]][(sel_logs.prediction == -1) & (sel_logs.ValueType == "Wh") ]
-       # print(sel_logs_val)
-        st.dataframe(sel_logs)
+        print(test_logs)
+        if valueType == 'ppm':
+            prediction = forest_prediction(model_url, databricks_token, test_logs)
+        else:
+            prediction = prediction_pkl(model_url, test_logs)
+
+        db_logs['prediction'] = prediction
+        print(db_logs.head())
+        #stampo a video il dataset con l'aggiunta della colonna "prediction"
+        st.dataframe(db_logs)
+        return db_logs
+    ##Bottone per visualizzare a video il dataset con la predizione
+    if (st.button('Carica Dati da DataBase di Edificio e Misura')):
+        predizione_db()
+    ##Bottone per salvare su azure storage il dataset con la predizione in formato json
+    if (st.button('Carica Dati da DataBase di "Edificio e Misura" e salva predizione su azure')):
+        db_logs = predizione_db()
+        result = saveJsonStorageAccountFromDataframe(db_logs,"predictcontainerdomoticaadsqldb") 
+        print ("rislutato salvataggio", result)
+        st.text("Predizione salvata")   
       
-    st.text("Oppure analizza i dati di test")
-    if(st.button('Find Anomalies')):
+    ####
+    ####Funzione per effettuare predizione dei dati inseriti dall'utente
+    ####
+    def predizione():    
         print('Button clicked!')
         feat_cols = ['Id', 'Value', 'Month','Weekday']
         
@@ -120,27 +158,29 @@ def start_side_menu():
         data = pd.DataFrame([row],columns = feat_cols)
         print(data)
 
-        if valueType == 'ppm':
-            model_url = load_modelurl_CO2()
-        elif valueType == 'C°':
-            model_url = load_modelurl_temperatura()
-        elif valueType == '%':
-            model_url = load_modelurl_umidita()
-        elif valueType == 'W':
-            model_url = load_modelurl_W()
-        elif valueType == 'Wh':
-            model_url = load_modelurl_Wh()
-
-       
         #model_url = load_modelurl_temperatura()
         databricks_token = load_databricks_token()
 
          # Prediction
         print(' pre prediction')
-        predictions = forest_prediction(model_url, databricks_token, data)
+        if valueType == 'ppm':
+            prediction = forest_prediction(model_url, databricks_token, data)
+        else:
+            prediction = prediction_pkl(model_url, data)
+
        # sel_logs['prediction'] = prediction
-        print(predictions)
-        data["Predizione"] = predictions
+        print(prediction)
+        data["Predizione"] = prediction
         st.text("Predizione:")
         st.dataframe(data)
+        return data
 
+    st.text("Oppure analizza i dati di test")
+    if(st.button('Effettua predizione')):
+        predizione()
+
+    if(st.button('Effettua predizione e salva su azure')):
+        data = predizione()
+        result = saveJsonStorageAccountFromDataframe(data,"predictcontainerdomoticaaduser")
+        print ("rislutato salvataggio", result)
+        st.text("Predizione salvata")
