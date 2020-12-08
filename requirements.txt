@@ -12,3 +12,4 @@ databricks-cli
 pyodbc
 matplotlib
 azure-storage-blob
+altair
