@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 import requests
+import altair as alt
 
 from ..data.load import load_azure_data
 from ..data.load import load_model_url
@@ -26,7 +27,7 @@ from ..save.OperationsStorageAccount import saveJsonStorageAccountFromDataframe
 #from sklearn.ensemble import IsolationForest
 
 def start_side_menu():
-    st.sidebar.title("Scegliere Edificio e Misura")
+    st.sidebar.title("Scegliere Edificio e Descrizione")
     value = st.sidebar.radio("Scegli luogo",("Edificio1","Edificio3","Villa"))
 
     if value == "Edificio1":
@@ -55,26 +56,26 @@ def start_side_menu():
     values = df_selectbox['Description'].tolist()
     options = df_selectbox['Id'].tolist()
     dic = dict(zip(options, values))
-    Id_descr = st.sidebar.selectbox('Choose a Measure', options, format_func=lambda x: dic[x])
+    Id_descr = st.sidebar.selectbox('Scegli una Descrizione', options, format_func=lambda x: dic[x])
     valueType = df_selectbox["ValueType"][df_selectbox.Id == Id_descr].values
    
     st.sidebar.title("Scegiere valori e data da testare")
     if valueType == 'ppm':
-        value_measure =         st.sidebar.slider("CO2 in ppm", 1, 1500000, 25, 1)
+        value_measure =         st.sidebar.slider("CO2 in ppm", 0, 5000, 25, 1)
     elif valueType == 'C°':
-        value_measure =         st.sidebar.slider("Gradi in C°", -10, 500, 20, 1)
+        value_measure =         st.sidebar.slider("Gradi in C°", -10, 50, 20, 1)
     elif valueType == '%':
         value_measure =         st.sidebar.slider("%_umidità", 0, 10000000, 25, 1)
     elif valueType == 'W':
-        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -1000, 10000, 5000, 100)
+        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -10000000, 1000, 5000, 100)
     elif valueType == 'Wh':
-        value_measure =         st.sidebar.slider("consumo energetico in Wh", 0, 10000, 2000, 100)
+        value_measure =         st.sidebar.slider("consumo energetico in Wh", -100000, 3000000, 2000, 100)
   
    
     ####Creazione calendario
     today =  datetime.date.today()
     day_calendar = st.sidebar.date_input("Selziona data di test", today)
-    st.text("Carica dati da db azure")
+    st.header("Carica dati da db azure")
     day = day_calendar.weekday()
     print("day:", day )
     mese = day_calendar.month
@@ -132,15 +133,35 @@ def start_side_menu():
         st.dataframe(db_logs)
         return db_logs
     ##Bottone per visualizzare a video il dataset con la predizione
-    if (st.button('Carica Dati da DataBase di Edificio e Misura')):
-        predizione_db()
+    if (st.button('Carica Dati da DB scegliendo Edificio e Descrizione')):
+        data = predizione_db()
+
+        data['DataDay'] = pd.to_datetime(data['Data'], unit='ms').dt.dayofyear
+        chartAltair = alt.Chart(data).mark_point(filled=True).encode(
+          x='DataDay:O',
+          y='Value:Q',
+          color=alt.condition('datum.prediction < 0', alt.ColorValue('red'), alt.ColorValue('lightblue'))
+        ).properties(
+         width=750,
+         height=300
+        ).configure_point(
+         size=50
+        )
+        st.altair_chart(chartAltair)
+
     ##Bottone per salvare su azure storage il dataset con la predizione in formato json
-    if (st.button('Carica Dati da DataBase di "Edificio e Misura" e salva predizione su azure')):
+    if (st.button('Carica Dati da DB di "Edificio e Desrizione" e salva predizione su DB')):
         db_logs = predizione_db()
-        result = saveJsonStorageAccountFromDataframe(db_logs,"predictcontainerdomoticaadsqldb") 
+        s_valueType = valueType.values
+        result = saveJsonStorageAccountFromDataframe(db_logs,"predictcontainerdomoticaadsqldb",s_valueType) 
         print ("rislutato salvataggio", result)
-        st.text("Predizione salvata")   
-      
+        if (result):
+            st.text("Predizione salvata") 
+        else:
+            st.text("Problemi con il salvataggio")     
+
+
+
     ####
     ####Funzione per effettuare predizione dei dati inseriti dall'utente
     ####
@@ -175,12 +196,19 @@ def start_side_menu():
         st.dataframe(data)
         return data
 
-    st.text("Oppure analizza i dati di test")
+    st.header("Oppure analizza i dati di test")
     if(st.button('Effettua predizione')):
-        predizione()
+        data = predizione()
 
     if(st.button('Effettua predizione e salva su azure')):
         data = predizione()
-        result = saveJsonStorageAccountFromDataframe(data,"predictcontainerdomoticaaduser")
-        print ("rislutato salvataggio", result)
-        st.text("Predizione salvata")
+        print ("valuetyoe", valueType)
+        s_valueType = valueType[0]
+        print ("s_valueType ", s_valueType )
+        result = saveJsonStorageAccountFromDataframe(data,"predictcontainerdomoticaaduser",s_valueType)
+        print ("rislutato salvataggio", result),
+        if (result):
+            st.text("Predizione salvata")   
+        else:
+            st.text("Problemi con il salvataggio")   
+    

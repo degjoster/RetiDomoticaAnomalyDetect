@@ -72,15 +72,17 @@ def saveLocalJsonPredictionFromStorageAccount(container_name, blob_name):
 
 # Funzione che salva su Storage Account BLOB CONTAINER un file BLOB (in questo caso .JSON)
 # In input richiede obbligatoriamente un dataframe pandas da salvare che poi verrà convertito in formato JSON
-# Come parametro opzionale il nome del container in cui salvare i file.
+# Come primo parametro opzionale richiede il nome del container in cui salvare i file.
+# Come secondo parametro opzionale richiede il nome dell'unità di misura per inserirlo nel nome del file blob JSON.
 # Il nome del Container deve essere in minuscolo perchè Azure storage account proibisce i cacatteri maiuscoli
 # La funzione restituisce True se tutto è andato a buon fine e False se qualcosa non è andato bene
-def saveJsonStorageAccountFromDataframe(df, container_name = "predictcontainerdomoticaad"):
+def saveJsonStorageAccountFromDataframe(df, container_name = "predictcontainerdomoticaad", unita_misura = "general"):
     try:
         blob_service_client = getBlobServiceClientByConnectionString()
         # Azure storage accetta solo container in minuscolo
         container_name_lower = container_name.lower()
-        print("fine caricamenti")
+        unita_misura_lower = unita_misura.lower()
+
         # Controllo se il container è già presente e se non esiste lo crea
         existingContiner = False
         for container in blob_service_client.list_containers():
@@ -96,7 +98,7 @@ def saveJsonStorageAccountFromDataframe(df, container_name = "predictcontainerdo
         PredictionContentJson = df.to_json(orient="records")
         
         # Creo blob client con nome univoco. Il file non è locale ma dumpato
-        blob_client = blob_service_client.get_blob_client(container=container_name_lower, blob=f"prediction_{utc_timestamp}.json")
+        blob_client = blob_service_client.get_blob_client(container=container_name_lower, blob=f"prediction_{utc_timestamp}-{unita_misura_lower}.json")
         
         # Carico dump su storage account
         blob_client.upload_blob(PredictionContentJson)

@@ -3,7 +3,7 @@ import streamlit as st
 from src.menu.side_menu import start_side_menu
 
 def main_section():
-    st.title("Dashboard for Anomalies")
+    st.title("Dashboard for Anomaly Detection")
     
 if __name__ == "__main__":
 
