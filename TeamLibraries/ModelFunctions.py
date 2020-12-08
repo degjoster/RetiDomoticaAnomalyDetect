@@ -15,13 +15,13 @@ def signals_selection(logs, groups):
     
     # Unità di misura da tenere e tipologie di rilevazioni da rimuovere
     measures_to_keep = ['ppm', 'C°', '%', 'W', 'Wh']
-    description_to_remove = ['Daikin Active Power Total','Consumo enel di E1 + Villa']
+    #description_to_remove = ['Daikin Active Power Total','Consumo enel di E1 + Villa']
     
      # Rimuovo i record associati a rilevazioni di tipo booleano
     logs = logs[logs['ValueType'].isin(measures_to_keep) == True]
     
     # Rimuovo i record associati a rilevazioni di tipo "Daikin Active Power Total" e "Consumo Enel di E1 + Villa"
-    logs = logs[logs['Description'].isin(description_to_remove) == False]
+    #logs = logs[logs['Description'].isin(description_to_remove) == False]
     
     # Effettuo il left join con la tabella group per ricavare l'ID della rilevazione
     logs = logs.merge(groups[['Description', 'Id']], how='left', on='Description')
