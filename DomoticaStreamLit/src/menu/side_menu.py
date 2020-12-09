@@ -152,7 +152,8 @@ def start_side_menu():
     ##Bottone per salvare su azure storage il dataset con la predizione in formato json
     if (st.button('Carica Dati da DB di "Edificio e Desrizione" e salva predizione su DB')):
         db_logs = predizione_db()
-        s_valueType = valueType.values
+        print ("valuetype", valueType)
+        s_valueType = valueType[0]
         result = saveJsonStorageAccountFromDataframe(db_logs,"predictcontainerdomoticaadsqldb",s_valueType) 
         print ("rislutato salvataggio", result)
         if (result):
@@ -202,9 +203,8 @@ def start_side_menu():
 
     if(st.button('Effettua predizione e salva su azure')):
         data = predizione()
-        print ("valuetyoe", valueType)
+        print ("valuetype", valueType)
         s_valueType = valueType[0]
-        print ("s_valueType ", s_valueType )
         result = saveJsonStorageAccountFromDataframe(data,"predictcontainerdomoticaaduser",s_valueType)
         print ("rislutato salvataggio", result),
         if (result):
