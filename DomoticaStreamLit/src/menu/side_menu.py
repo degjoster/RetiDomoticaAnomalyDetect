@@ -63,13 +63,13 @@ def start_side_menu():
     if valueType == 'ppm':
         value_measure =         st.sidebar.slider("CO2 in ppm", 0, 50000, 25, 1)
     elif valueType == 'C°':
-        value_measure =         st.sidebar.slider("Gradi in C°", -10, 50000, 20, 1)
+        value_measure =         st.sidebar.slider("Gradi in C°", -20, 100, 20, 1)
     elif valueType == '%':
-        value_measure =         st.sidebar.slider("%_umidità", 0, 10000000, 25, 1)
+        value_measure =         st.sidebar.slider("%_umidità", 0, 100, 25, 1)
     elif valueType == 'W':
-        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -10000000, 100000, 5000, 100)
+        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", 0, 100000, 5000, 100)
     elif valueType == 'Wh':
-        value_measure =         st.sidebar.slider("consumo energetico in Wh", -100000, 3000000, 2000, 100)
+        value_measure =         st.sidebar.slider("consumo energetico in Wh", 0, 30000, 2000, 100)
   
    
     ####Creazione calendario
@@ -131,10 +131,7 @@ def start_side_menu():
         print(db_logs.head())
         #stampo a video il dataset con l'aggiunta della colonna "prediction"
         st.dataframe(db_logs)
-        if prediction == '1':
-            print("I valori inseriti non producono anomalia")
-        else:
-            print("I valori inseriti generano un'anomalia") 
+        
         return db_logs
     ##Bottone per visualizzare a video il dataset con la predizione
     if (st.button('Carica Dati da DB scegliendo Edificio e Descrizione')):
@@ -199,6 +196,10 @@ def start_side_menu():
         data["Predizione"] = prediction
         st.text("Predizione:")
         st.dataframe(data)
+        if prediction[0] == 1:
+            st.text("I valori inseriti non producono anomalia")
+        else:
+            st.text("'ATTENZIONE!' I valori inseriti generano un'anomalia") 
         return data
 
     st.header("Oppure analizza i dati di test")
