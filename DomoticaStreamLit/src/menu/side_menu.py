@@ -131,6 +131,10 @@ def start_side_menu():
         print(db_logs.head())
         #stampo a video il dataset con l'aggiunta della colonna "prediction"
         st.dataframe(db_logs)
+        if prediction == '1':
+            print("I valori inseriti non producono anomalia")
+        else:
+            print("I valori inseriti generano un'anomalia") 
         return db_logs
     ##Bottone per visualizzare a video il dataset con la predizione
     if (st.button('Carica Dati da DB scegliendo Edificio e Descrizione')):
