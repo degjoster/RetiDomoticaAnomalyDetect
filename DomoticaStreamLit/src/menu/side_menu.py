@@ -59,15 +59,15 @@ def start_side_menu():
     Id_descr = st.sidebar.selectbox('Scegli una Descrizione', options, format_func=lambda x: dic[x])
     valueType = df_selectbox["ValueType"][df_selectbox.Id == Id_descr].values
    
-    st.sidebar.title("Scegiere valori e data da testare")
+    st.sidebar.title("Scegliere valori e data da testare")
     if valueType == 'ppm':
-        value_measure =         st.sidebar.slider("CO2 in ppm", 0, 5000, 25, 1)
+        value_measure =         st.sidebar.slider("CO2 in ppm", 0, 50000, 25, 1)
     elif valueType == 'C°':
-        value_measure =         st.sidebar.slider("Gradi in C°", -10, 50, 20, 1)
+        value_measure =         st.sidebar.slider("Gradi in C°", -10, 50000, 20, 1)
     elif valueType == '%':
         value_measure =         st.sidebar.slider("%_umidità", 0, 10000000, 25, 1)
     elif valueType == 'W':
-        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -10000000, 1000, 5000, 100)
+        value_measure =         st.sidebar.slider("produzione fotovoltaico in W", -10000000, 100000, 5000, 100)
     elif valueType == 'Wh':
         value_measure =         st.sidebar.slider("consumo energetico in Wh", -100000, 3000000, 2000, 100)
   
@@ -150,7 +150,7 @@ def start_side_menu():
         st.altair_chart(chartAltair)
 
     ##Bottone per salvare su azure storage il dataset con la predizione in formato json
-    if (st.button('Carica Dati da DB di "Edificio e Desrizione" e salva predizione su DB')):
+    if (st.button('Carica Dati da DB di "Edificio e Descrizione" e salva predizione su DB')):
         db_logs = predizione_db()
         print ("valuetype", valueType)
         s_valueType = valueType[0]
