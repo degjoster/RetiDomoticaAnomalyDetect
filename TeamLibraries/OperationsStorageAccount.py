@@ -6,7 +6,7 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, _
 # Funzione che restituisce un'istanza di BlobServiceClient tramite la stringa di connessione
 def getBlobServiceClientByConnectionString():
     try:
-        connect_str = "DefaultEndpointsProtocol=https;AccountName=sorageaccountgdeiana;AccountKey=UL8Q31FdBG/jlwDSMds4bgXYn6eQBIpwJ54uN6CjuMxtA8rNAwThZaJdilWE6Wfi6RIrrnJlTYbjH9T4bcsbyQ==;EndpointSuffix=core.windows.net"    
+        connect_str = "DefaultEndpointsProtocol=https;AccountName=storageaccountprogteam1;AccountKey=uJFo5/ibPFsUqCUgXXxL7Uj1GWSAN8SG89fcv71SDwdobTnu0V4Eg52XX3nUgDDwV/50U9WzyTElNKHeJ5Yo7A==;EndpointSuffix=core.windows.net"    
         #Create the BlobServiceClient object which will be used to create a container client
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
     

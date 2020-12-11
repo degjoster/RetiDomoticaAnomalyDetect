@@ -63,7 +63,7 @@ def load_local_group():
     # Import sklearn pickle objects from training pipeline (model and feature eng pipelines)
    # folder_path = os.path.abspath(".")
     datasets_path = os.path.abspath("..")
-
+    print(datasets_path)
     group_object_path = os.path.join(datasets_path,"datasets" ,"group.csv")
 
     print(f"group_object_path: {group_object_path}")
