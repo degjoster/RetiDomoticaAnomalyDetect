@@ -5,16 +5,15 @@ import pandas as pd
 import pyodbc
 import pickle
 
+
 def connect_azure_database():
     # Funzione che crea una connessione con il database SQL CampusData presente nella sottoscrizione di Microsoft Azure
     try:
         conn = pyodbc.connect(
-            r'Driver={​​​​ODBC Driver 17 for SQL Server}​​​​;'
+            r'Driver={ODBC Driver 17 for SQL Server};'
             r'Server=tcp:aiengineerserver.database.windows.net,1433;'
             r'Database=CampusData;Uid=AzureUser;Pwd=PasswordReti01;Encrypt=yes'
-            #;TrustServerCertificate=no;Connection Timeout=30;'
         )
-        
         return conn
     except pyodbc.Error as err: # Only error I wanted passed for the test!
         logging.warn(err)
