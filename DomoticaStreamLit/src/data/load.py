@@ -9,7 +9,7 @@ def connect_azure_database():
     try:
         conn = pyodbc.connect(
             r'Driver={ODBC Driver 17 for SQL Server};'
-            r'Server=tcp:aiengserver.database.windows.net,1433;'
+            r'Server=tcp:aiengineerserver.database.windows.net,1433;'
             r'Database=CampusData;Uid=AzureUser;Pwd=PasswordReti01;Encrypt=yes'
         )
         return conn
@@ -35,29 +35,29 @@ def load_model_url():
 
 def load_modelurl_CO2():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'ppm'
-    return "https://adb-4483624067336826.6.azuredatabricks.net/model/team1_CO2/1/invocations"
+    return "https://adb-1383651973845496.16.azuredatabricks.net/model/team1_CO2/1/invocations"
 
 def load_modelurl_temperatura():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'C°'
-    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_temperatura/Production/invocations"
+    return "https://adb-1383651973845496.16.azuredatabricks.net/model/team1_temperatura/1/invocations"
 
 def load_modelurl_umidita():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in '%'
-    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_umidita/Production/invocations"
+    return "https://adb-1383651973845496.16.azuredatabricks.net/model/team1_umidita/1/invocations"
 
 
 def load_modelurl_W():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'W'
-    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_W/Production/invocations"
+    return "https://adb-1383651973845496.16.azuredatabricks.net/model/team1_W/1/invocations"
 
 
 def load_modelurl_Wh():
     # Restituisce l'URL per la chiamata del modello salvato in Databricks addestrato su rilevazioni in 'Wh'
-    return "https://adb-5873545433774891.11.azuredatabricks.net/model/model_team1_Wh/Production/invocations"
+    return "https://adb-1383651973845496.16.azuredatabricks.net/model/team1_Wh/1/invocations"
 
 def load_databricks_token():
     # Funzione che carica il token per la connessione a DataBricks
-    return "dapi9330364d579e4293586ae3e380aac044"
+    return "dapi36147c32e3c159bff19c1e3d1195baef-2"
 
 def load_local_group():
     # Import sklearn pickle objects from training pipeline (model and feature eng pipelines)

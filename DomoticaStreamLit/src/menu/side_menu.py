@@ -86,7 +86,7 @@ def start_side_menu():
 
     ####Caricamento del modello da usare per la predizione
     if valueType == 'ppm':
-        model_url = load_modelurl_CO2()
+        model_url = load_sklearn_object("model_pickle_CO2.pkl")
     elif valueType == 'C°':
         model_url = load_sklearn_object("model_pickle_temperatura.pkl")
     elif valueType == '%':
@@ -122,10 +122,11 @@ def start_side_menu():
         databricks_token = load_databricks_token()
         print(' pre prediction')
         print(test_logs)
-        if valueType == 'ppm':
-            prediction = forest_prediction(model_url, databricks_token, test_logs)
-        else:
-            prediction = prediction_pkl(model_url, test_logs)
+        #if valueType == 'ppm':
+        #    prediction = forest_prediction(model_url, databricks_token, test_logs)
+        #else:
+        
+        prediction = prediction_pkl(model_url, test_logs)
 
         db_logs['prediction'] = prediction
         print(db_logs.head())
@@ -137,7 +138,7 @@ def start_side_menu():
     if (st.button('Carica Dati da DB scegliendo Edificio e Descrizione')):
         data = predizione_db()
 
-        data['DataDay'] = pd.to_datetime(data['Data'], unit='ms').dt.dayofyear
+        '''data['DataDay'] = pd.to_datetime(data['Data'], unit='ms').dt.dayofyear
         chartAltair = alt.Chart(data).mark_point(filled=True).encode(
           x='DataDay:O',
           y='Value:Q',
@@ -147,7 +148,21 @@ def start_side_menu():
          height=300
         ).configure_point(
          size=50
+        )'''
+        
+        massimo = data['Value'].max()
+        minimo = data['Value'].min()
+        chartAltair = alt.Chart(data).mark_point(filled=True).encode(
+            alt.X('Data:T'),
+            alt.Y('Value:Q',scale=alt.Scale(domain=(minimo, massimo))),
+            color=alt.condition('datum.prediction < 0', alt.ColorValue('red'), alt.ColorValue('lightblue'))
+        ).properties(
+            width=750,
+            height=300
+        ).configure_point(
+            size=20
         )
+        
         st.altair_chart(chartAltair)
 
     ##Bottone per salvare su azure storage il dataset con la predizione in formato json
@@ -186,10 +201,10 @@ def start_side_menu():
 
          # Prediction
         print(' pre prediction')
-        if valueType == 'ppm':
-            prediction = forest_prediction(model_url, databricks_token, data)
-        else:
-            prediction = prediction_pkl(model_url, data)
+        #if valueType == 'ppm':
+        #    prediction = forest_prediction(model_url, databricks_token, data)
+        #else:
+        prediction = prediction_pkl(model_url, data)
 
        # sel_logs['prediction'] = prediction
         print(prediction)
